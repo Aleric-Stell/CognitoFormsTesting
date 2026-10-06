@@ -1,8 +1,461 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>AlericCognitoFormsTestingWebsite</title><meta name="description" content="A simple page for testing embedded Cognito Forms."><style>
-*{box-sizing:border-box}body{margin:0;background:#fff;color:#20252b;font-family:Arial,sans-serif}main{max-width:1000px;margin:0 auto;padding:40px 24px}h1{font-size:20px;font-weight:600;margin:0 0 10px;overflow-wrap:anywhere}.intro{font-size:14px;color:#6b7280;margin:0 0 40px}.form-section{margin-bottom:36px}h2{font-size:14px;font-weight:500;margin:0 0 12px;color:#626b76}.embed-slot{min-height:280px;border:1px dashed #d6dbe1;border-radius:4px;padding:20px}.placeholder{font-size:13px;color:#939aa3;margin:0}@media(max-width:600px){main{padding:28px 16px}}
-</style></head><body><main><h1>AlericCognitoFormsTestingWebsite</h1><p class="intro">Embedded Cognito Forms testing</p>
-<section class="form-section" aria-labelledby="form-1-title"><h2 id="form-1-title">Form 1</h2><div class="embed-slot" id="form-1"><script src="https://www.cognitoforms.com/f/seamless.js" data-key="s6wGoAJFQ0GU1EcOxsedxg" data-form="774"></script></div></section>
-<section class="form-section" aria-labelledby="form-2-title"><h2 id="form-2-title">Form 2</h2><div class="embed-slot" id="form-2"><!-- Insert Cognito Forms embed here. --><p class="placeholder">Form embed goes here.</p></div></section>
-<section class="form-section" aria-labelledby="form-3-title"><h2 id="form-3-title">Form 3</h2><div class="embed-slot" id="form-3"><!-- Insert Cognito Forms embed here. --><p class="placeholder">Form embed goes here.</p></div></section>
-</main></body></html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>AlericCognitoFormsTestingWebsite</title>
+
+    <meta
+        name="description"
+        content="A simple page for testing embedded Cognito Forms."
+    >
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #fff;
+            color: #20252b;
+            font-family: Arial, sans-serif;
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        h1 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0 0 10px;
+            overflow-wrap: anywhere;
+        }
+
+        .intro {
+            font-size: 14px;
+            color: #6b7280;
+            margin: 0 0 40px;
+        }
+
+        .form-section {
+            margin-bottom: 36px;
+        }
+
+        h2 {
+            font-size: 14px;
+            font-weight: 500;
+            margin: 0 0 12px;
+            color: #626b76;
+        }
+
+        .embed-slot {
+            min-height: 280px;
+            border: 1px dashed #d6dbe1;
+            border-radius: 4px;
+            padding: 20px;
+        }
+
+        .placeholder {
+            font-size: 13px;
+            color: #939aa3;
+            margin: 0;
+        }
+
+        /*
+         * Verification challenge.
+         * This starts hidden and is displayed after the first
+         * valid Submit attempt.
+         */
+        #verification-panel {
+            display: none;
+            margin: 0 0 24px;
+            padding: 20px;
+            border: 2px solid #626b76;
+            border-radius: 6px;
+            background: #f8f9fa;
+        }
+
+        #verification-panel.visible {
+            display: block;
+        }
+
+        #verification-panel h3 {
+            margin: 0 0 10px;
+            font-size: 16px;
+        }
+
+        #verification-panel p {
+            margin: 0 0 12px;
+            font-size: 14px;
+        }
+
+        #verification-code {
+            display: inline-block;
+            margin: 4px 0 16px;
+            padding: 10px 16px;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 6px;
+            background: #fff;
+            border: 1px solid #b8bec6;
+            border-radius: 4px;
+        }
+
+        #verification-input {
+            display: block;
+            width: 180px;
+            max-width: 100%;
+            padding: 10px;
+            font-size: 18px;
+            border: 1px solid #8d949d;
+            border-radius: 4px;
+        }
+
+        #verification-message {
+            min-height: 20px;
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .verification-error {
+            color: #b42318;
+        }
+
+        .verification-success {
+            color: #067647;
+        }
+
+        @media (max-width: 600px) {
+            main {
+                padding: 28px 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<main>
+
+    <h1>AlericCognitoFormsTestingWebsite</h1>
+
+    <p class="intro">
+        Embedded Cognito Forms testing
+    </p>
+
+
+    <!--
+        This panel belongs to your WEBSITE,
+        not to Cognito Forms.
+
+        It will become visible when someone first tries
+        to submit Form 1.
+    -->
+    <section
+        id="verification-panel"
+        aria-labelledby="verification-title"
+    >
+
+        <h3 id="verification-title">
+            Verification required
+        </h3>
+
+        <p>
+            Enter the four-digit number shown below,
+            then select Submit again.
+        </p>
+
+        <div
+            id="verification-code"
+            aria-live="polite"
+        ></div>
+
+        <label for="verification-input">
+            Verification number
+        </label>
+
+        <input
+            id="verification-input"
+            type="text"
+            inputmode="numeric"
+            maxlength="4"
+            autocomplete="off"
+        >
+
+        <div
+            id="verification-message"
+            aria-live="polite"
+        ></div>
+
+    </section>
+
+
+    <section
+        class="form-section"
+        aria-labelledby="form-1-title"
+    >
+
+        <h2 id="form-1-title">
+            Form 1
+        </h2>
+
+        <div
+            class="embed-slot"
+            id="form-1"
+        >
+
+            <script
+                src="https://www.cognitoforms.com/f/seamless.js"
+                data-key="s6wGoAJFQ0GU1EcOxsedxg"
+                data-form="774">
+            </script>
+
+        </div>
+
+    </section>
+
+
+    <section
+        class="form-section"
+        aria-labelledby="form-2-title"
+    >
+
+        <h2 id="form-2-title">
+            Form 2
+        </h2>
+
+        <div
+            class="embed-slot"
+            id="form-2"
+        >
+
+            <p class="placeholder">
+                Form embed goes here.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <section
+        class="form-section"
+        aria-labelledby="form-3-title"
+    >
+
+        <h2 id="form-3-title">
+            Form 3
+        </h2>
+
+        <div
+            class="embed-slot"
+            id="form-3"
+        >
+
+            <p class="placeholder">
+                Form embed goes here.
+            </p>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script>
+
+    /*
+     * Current verification code.
+     *
+     * null means that the visitor has not yet reached
+     * the verification step.
+     */
+    let verificationCode = null;
+
+
+    /*
+     * Tracks whether the visitor has successfully
+     * completed the challenge.
+     */
+    let verificationPassed = false;
+
+
+    const verificationPanel =
+        document.getElementById("verification-panel");
+
+    const verificationCodeDisplay =
+        document.getElementById("verification-code");
+
+    const verificationInput =
+        document.getElementById("verification-input");
+
+    const verificationMessage =
+        document.getElementById("verification-message");
+
+
+    /*
+     * Generate a four-digit number from 1000 through 9999.
+     */
+    function generateVerificationCode() {
+
+        const numbers = new Uint32Array(1);
+
+        crypto.getRandomValues(numbers);
+
+        return 1000 + (numbers[0] % 9000);
+
+    }
+
+
+    /*
+     * Listen for Cognito Forms' beforeSubmit event.
+     *
+     * Cognito Forms fires this AFTER the person clicks
+     * Submit but BEFORE the entry is sent to Cognito.
+     */
+    Cognito.on("beforeSubmit", function(event) {
+
+        /*
+         * If Cognito Forms is already displaying normal
+         * validation errors, don't show our custom
+         * verification challenge yet.
+         *
+         * Let the visitor fix the form first.
+         */
+        if (event.data.hasErrors) {
+            return;
+        }
+
+
+        /*
+         * If verification has already succeeded,
+         * do nothing.
+         *
+         * By NOT calling preventDefault(),
+         * Cognito Forms continues submitting normally.
+         */
+        if (verificationPassed) {
+            return;
+        }
+
+
+        /*
+         * FIRST SUBMIT CLICK
+         *
+         * No challenge exists yet.
+         *
+         * Generate one, show it to the visitor,
+         * and stop this submission.
+         */
+        if (verificationCode === null) {
+
+            verificationCode =
+                generateVerificationCode();
+
+            verificationCodeDisplay.textContent =
+                verificationCode;
+
+            verificationPanel.classList.add("visible");
+
+            verificationMessage.textContent = "";
+
+            /*
+             * Stop Cognito Forms from submitting.
+             */
+            event.preventDefault();
+
+
+            /*
+             * Move the visitor back to the verification box.
+             */
+            verificationPanel.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+
+            verificationInput.focus();
+
+            return;
+        }
+
+
+        /*
+         * SECOND AND LATER SUBMIT CLICKS
+         *
+         * Check what the visitor typed.
+         */
+        const enteredCode =
+            verificationInput.value.trim();
+
+
+        /*
+         * Wrong code:
+         * prevent submission.
+         */
+        if (enteredCode !== String(verificationCode)) {
+
+            event.preventDefault();
+
+            verificationMessage.textContent =
+                "The verification number is incorrect. Please try again.";
+
+            verificationMessage.className =
+                "verification-error";
+
+            verificationInput.focus();
+            verificationInput.select();
+
+            return;
+        }
+
+
+        /*
+         * Correct code.
+         *
+         * We intentionally DO NOT call preventDefault().
+         * Cognito Forms will continue with the submission.
+         */
+        verificationPassed = true;
+
+        verificationMessage.textContent =
+            "Verification successful.";
+
+        verificationMessage.className =
+            "verification-success";
+
+    });
+
+
+    /*
+     * Reset everything after a successful submission.
+     *
+     * This is helpful while testing if the form remains
+     * available for another entry.
+     */
+    Cognito.on("afterSubmit", function(event) {
+
+        verificationCode = null;
+        verificationPassed = false;
+
+        verificationInput.value = "";
+
+        verificationCodeDisplay.textContent = "";
+
+        verificationPanel.classList.remove("visible");
+
+        verificationMessage.textContent = "";
+        verificationMessage.className = "";
+
+    });
+
+</script>
+
+</body>
+</html>
